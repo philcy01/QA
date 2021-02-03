@@ -1,0 +1,96 @@
+package testselenium;
+
+import java.io.IOException;
+
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.testng.Assert;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
+
+import seleniumpage.BasePage;
+import seleniumpage.HomePage;
+import seleniumpage.LoginPage;
+import seleniumpage.ReadExcel;
+
+public class SeleniumTestCase1 extends BaseTest{
+	
+	BasePage basicPage_obj;
+	LoginPage loginPage_obj;
+	HomePage homePage_obj;
+	ReadExcel excelPage_obj;
+	
+	
+	@BeforeClass
+	public void setUp() {
+		
+		launchBrowser();
+		
+		//object of base page
+		basicPage_obj = new BasePage();
+		basicPage_obj.setDriver(driver);
+		
+		//object of login page
+		loginPage_obj = new LoginPage();
+		loginPage_obj.setDriver(driver);
+		
+		//object of home page
+		homePage_obj = new HomePage();
+		homePage_obj.setDriver(driver);
+		
+		//object of excel page
+		excelPage_obj = new ReadExcel();
+		
+		
+	}
+	
+	@Test(priority = 0)
+	public void testInValidLogin() {
+		
+		Assert.assertTrue(loginPage_obj.isPageLoaded(), "[FAIL] Login page is not open");
+		loginPage_obj.setUsername("mercury");
+		loginPage_obj.setPassword("23344");
+		loginPage_obj.clickLogin();
+		//Assert.assertTrue(homePage_obj.isPageLoaded(), "[FAIL] Login page is not open");
+	}
+	
+	@Test(priority = 1)
+	public void testInValidLoginWithIncorrectUserName() {
+		
+		Assert.assertTrue(loginPage_obj.isPageLoaded(), "[FAIL] Login page is not open");
+		loginPage_obj.setUsername("1234567");
+		loginPage_obj.setPassword("mercury");
+		loginPage_obj.clickLogin();
+		Assert.assertTrue(loginPage_obj.isPageLoaded(), "[FAIL] Login page is not open");
+	}
+	
+	@Test(priority = 2)
+	public void testValidLogin() throws InvalidFormatException, IOException {
+		
+		Assert.assertTrue(loginPage_obj.isPageLoaded(), "[FAIL] Login page is not open");
+		String username = excelPage_obj.getDateExcelData("Login", 2, 1);
+		String password = excelPage_obj.getDateExcelData("Login", 2, 2);
+		
+		loginPage_obj.setUsername(username);
+		loginPage_obj.setPassword(password);
+		loginPage_obj.clickLogin();
+		Assert.assertTrue(homePage_obj.isPageLoaded(), "[FAIL] Login page is not open");
+	}
+	
+	@Test(priority = 3)
+	public void testSignOffButtonClick() {
+		
+		homePage_obj.clickLogout();
+	}
+	
+	
+
+	
+	@AfterClass
+	public void closeEverything() {
+		
+		closeDriver();
+		
+	}
+
+}
